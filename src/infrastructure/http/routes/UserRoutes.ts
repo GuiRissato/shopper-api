@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { UserService } from '../../../domain/services/UserService';
 import { UserController } from '../../../application/controllers/UserController';
-import { UserRepository } from '../../../domain/repositories/UserRepository';
+import { UserRepository } from '../../../domain/repositories/User/UserRepository';
 import dbConnection from '../../database/connection';
 
 const UserRouter = Router();

@@ -1,5 +1,5 @@
 // src/domain/repositories/IUserRepository.ts
-import { User } from '../models/User';
+import { User } from '../../models/User';
 
 export interface IUserRepository {
   create(user: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User>;

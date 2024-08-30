@@ -1,4 +1,4 @@
-import { MeasurementRepository } from '../repositories/Measurementrepository';
+import { MeasurementRepository } from '../repositories/Measurement/Measurementrepository';
 
 export class MeasurementService {
   private measurementRepository: MeasurementRepository;
@@ -21,5 +21,22 @@ export class MeasurementService {
 
     await this.measurementRepository.confirmMeasure(measure_uuid, confirmed_value);
     return 'CONFIRMED';
+  }
+
+  async getMeasuresByCustomerCode(customerCode: string, measureType?: string) {
+    if (measureType && !['WATER', 'GAS'].includes(measureType.toUpperCase())) {
+      throw new Error('INVALID_TYPE');
+    }
+
+    const measures = await this.measurementRepository.findMeasuresByCustomerCode(
+      customerCode,
+      measureType ? measureType.toUpperCase() as 'WATER' | 'GAS' : undefined
+    );
+
+    if (measures.length === 0) {
+      throw new Error('MEASURES_NOT_FOUND');
+    }
+
+    return measures;
   }
 }

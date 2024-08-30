@@ -11,19 +11,8 @@ app.use(express.json());
 
 app.use('/api',UserRouter);
 
-// Responsável por receber uma imagem em base 64, consultar o Gemini e retornar a medida lida pela API
 app.use('', UploadRoutes);
 
 app.use('',MeasurementRoutes);
-
-// Responsável por confirmar ou corrigir o valor lido pelo LLM
-app.patch('/confirm', (req, res)=> {
-
-});
-
-// Responsável por listar as medidas realizadas por um determinado cliente
-app.get('/:customer_code/list', (req, res)=> {
-
-});
 
 export default app;

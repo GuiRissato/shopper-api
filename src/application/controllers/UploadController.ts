@@ -2,11 +2,13 @@
 import { Request, Response } from 'express';
 import { GeminiApiService } from '../../domain/services/GeminiApiService';
 import { UserService } from '../../domain/services/UserService';
-import { ConsumptionRepository } from '../../domain/repositories/ConsumptionRepository';
+import { ConsumptionRepository } from '../../domain/repositories/Consumption/ConsumptionRepository';
 import { validateBase64, getCurrentMonth } from '../../shared/utils/validators';
 import * as fs from 'fs';
 import * as path from 'path';
 import sharp from 'sharp';
+import { randomUUID } from 'crypto';
+
 
 export class UploadController {
   private geminiApiService: GeminiApiService;
@@ -23,19 +25,15 @@ export class UploadController {
     try {
       const { image, customer_code, measure_datetime, measure_type } = req.body;
 
-      const user = await this.userService.findUserByCustomerCode(customer_code);
-    
-      // Verificar se o usuário foi encontrado
+      let user = await this.userService.findUserByCustomerCode(customer_code);
+     
       if (!user) {
-        return res.status(404).json({
-          error_code: 'USER_NOT_FOUND',
-          error_description: 'Usuário não encontrado',
-        });
+        const name = randomUUID();
+        user = await this.userService.createUser({name,customer_code});
       }
   
       const userId = user.id;
 
-      // Validação dos dados recebidos
       if ((!image || !customer_code || !measure_datetime || !measure_type) || (!validateBase64(image)) || (!['WATER', 'GAS'].includes(measure_type.toUpperCase()))) {
         return res.status(400).json({
           error_code: 'INVALID_DATA',

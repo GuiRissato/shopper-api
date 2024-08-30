@@ -1,5 +1,4 @@
-// src/application/services/UserService.ts
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { IUserRepository } from '../../domain/repositories/User/IUserRepository';
 import { User } from '../../domain/models/User';
 
 export class UserService {

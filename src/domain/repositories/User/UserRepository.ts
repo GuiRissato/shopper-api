@@ -1,7 +1,7 @@
 // src/domain/repositories/UserRepository.ts
-import dbConnection from '../../infrastructure/database/connection';
+import dbConnection from '../../../infrastructure/database/connection';
 import { IUserRepository } from './IUserRepository';
-import { User } from '../models/User';
+import { User } from '../../models/User';
 
 export class UserRepository implements IUserRepository {
 

@@ -2,9 +2,9 @@ import { Router } from 'express';
 import { UploadController } from '../../../application/controllers/UploadController';
 import { GeminiApiService } from '../../../domain/services/GeminiApiService';
 import { UserService } from '../../../domain/services/UserService';
-import { UserRepository } from '../../../domain/repositories/UserRepository';
+import { UserRepository } from '../../../domain/repositories/User/UserRepository';
 import dbConnection from '../../database/connection';
-import { ConsumptionRepository } from '../../../domain/repositories/ConsumptionRepository';
+import { ConsumptionRepository } from '../../../domain/repositories/Consumption/ConsumptionRepository';
 
 const router = Router();
 

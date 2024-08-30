@@ -47,4 +47,40 @@ export class MeasurementController {
       });
     }
   }
+
+  async listMeasures(req: Request, res: Response): Promise<Response> {
+    const { customer_code } = req.params;
+    const { measure_type } = req.query;
+
+    try {
+      const measures = await this.measurementService.getMeasuresByCustomerCode(customer_code, measure_type as string);
+
+      const formattedMeasures = measures.map(measure => ({
+        measure_uuid: measure.uuid,
+        measure_datetime: measure.created_at,
+        measure_type: measure.type,
+        has_confirmed: measure.has_confirmed,
+        image_url: measure.image_url,
+      }));
+
+      return res.status(200).json({
+        customer_code,
+        measures: formattedMeasures,
+      });
+    } catch (error: any) {
+      if (error.message === 'INVALID_TYPE') {
+        return res.status(400).json({
+          error_code: 'INVALID_TYPE',
+          error_description: 'Tipo de medição não permitida',
+        });
+      } else if (error.message === 'MEASURES_NOT_FOUND') {
+        return res.status(404).json({
+          error_code: 'MEASURES_NOT_FOUND',
+          error_description: 'Nenhuma leitura encontrada',
+        });
+      }
+
+      return res.status(500).json({ error_code: 'INTERNAL_ERROR', error_description: 'Erro interno do servidor' });
+    }
+  }
 }
