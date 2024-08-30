@@ -1,14 +1,15 @@
+// src/application/services/UserService.ts
+import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { User } from '../../domain/models/User';
-import { UserRepository } from '../../domain/repositories/UserRepository';
 
 export class UserService {
-  private userRepository: UserRepository;
+  private userRepository: IUserRepository;
 
-  constructor() {
-    this.userRepository = new UserRepository();
+  constructor(userRepository: IUserRepository) {
+    this.userRepository = userRepository;
   }
 
-  async createUser(userData: User): Promise<User> {
+  async createUser(userData:  Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User> {
     const existingUser = await this.userRepository.findByCustomerCode(userData.customer_code);
     if (existingUser) {
       throw new Error('Customer code already exists');
@@ -17,5 +18,23 @@ export class UserService {
     return user;
   }
 
-  // Outros métodos para lógica de negócios
+  async findMeasureByMonth(customerCode: string, measureDatetime: number, measureType: 'WATER' | 'GAS'): Promise<any> {
+    try {
+      const user = await this.userRepository.findByCustomerCode(customerCode);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const date = new Date(measureDatetime);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // getMonth() retorna 0 para janeiro, precisamos adicionar 1
+
+      // Chamando o repositório para buscar a medida
+      const measure = await this.userRepository.findMeasureByMonth(user.id, year, month, measureType);
+      return measure;
+    } catch (error: any) {
+      throw new Error(`Failed to find measure by month: ${error.message}`);
+    }
+  }
+
 }

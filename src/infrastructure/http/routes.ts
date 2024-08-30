@@ -1,20 +1,26 @@
 import express from 'express';
-import { UserController } from '../../application/controllers/UserController';
+import UserRouter from './routes/UserRoutes';
+import UploadRoutes from './routes/UploadRoutes';
+
 
 const app = express();
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.json());
 
-const userController = new UserController();
-
-app.post('/users', (req, res) => userController.createUser(req, res));
+app.use('/api',UserRouter)
 
 // Responsável por receber uma imagem em base 64, consultar o Gemini e retornar a medida lida pela API
-app.post('/upload', (req, res)=> {});
+app.use('', UploadRoutes);
 
 // Responsável por confirmar ou corrigir o valor lido pelo LLM
-app.post('/confirm', (req, res)=> {});
+app.patch('/confirm', (req, res)=> {
+
+});
 
 // Responsável por listar as medidas realizadas por um determinado cliente
-app.get('/:customer_code/list', (req, res)=> {});
+app.get('/:customer_code/list', (req, res)=> {
+
+});
 
 export default app;
