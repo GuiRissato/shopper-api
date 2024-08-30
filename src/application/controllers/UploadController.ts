@@ -8,17 +8,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import sharp from 'sharp';
 import { randomUUID } from 'crypto';
+import { FileService } from '../../domain/services/FileService';
 
 
 export class UploadController {
   private geminiApiService: GeminiApiService;
   private userService: UserService;
   private consumptionRepository: ConsumptionRepository;
+  private fileService: FileService;
 
-  constructor(geminiApiService: GeminiApiService, userService: UserService, consumptionRepository: ConsumptionRepository) {
+  constructor(geminiApiService: GeminiApiService, userService: UserService, consumptionRepository: ConsumptionRepository, fileService: FileService) {
     this.geminiApiService = geminiApiService;
     this.userService = userService;
     this.consumptionRepository = consumptionRepository;
+    this.fileService = fileService;
   }
 
   async uploadImage(req: Request, res: Response): Promise<Response> {
@@ -51,6 +54,10 @@ export class UploadController {
         });
       }
 
+      const filename = `${customer_code}_${measure_datetime}`;
+      await this.fileService.saveImage(image, filename);
+      console.log(this.fileService.getPublicUrl(filename))
+
       const uploadDir = path.join(__dirname, '..', 'uploads');
 
       if (!fs.existsSync(uploadDir)) {
@@ -70,7 +77,7 @@ export class UploadController {
       await this.consumptionRepository.saveConsumption({
         user_id: userId,
         uuid: measurementDetails.guid,
-        image_url: measurementDetails.image_url,
+        image_url: this.fileService.getPublicUrl(filename),
         measure_value: measurementDetails.measure_value,
         has_confirmed: false,
         type: measure_type.toLowerCase(),
@@ -78,7 +85,7 @@ export class UploadController {
 
       // Resposta com os detalhes da imagem e medição
       return res.status(200).json({
-        image_url: measurementDetails.image_url,
+        image_url: this.fileService.getPublicUrl(filename),
         measure_value: measurementDetails.measure_value,
         measure_uuid: measurementDetails.guid,
       });

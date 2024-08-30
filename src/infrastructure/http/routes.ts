@@ -1,6 +1,7 @@
 import express from 'express';
 import UserRouter from './routes/UserRoutes';
 import UploadRoutes from './routes/UploadRoutes';
+import path from 'path';
 import MeasurementRoutes from './routes/MeasurementRoutes'
 
 
@@ -14,5 +15,7 @@ app.use('/api',UserRouter);
 app.use('', UploadRoutes);
 
 app.use('',MeasurementRoutes);
+
+app.use('/images', express.static(path.join(__dirname, '..', '..', 'images')));
 
 export default app;

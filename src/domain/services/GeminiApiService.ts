@@ -4,7 +4,6 @@ import { config } from "dotenv";
 
 export class GeminiApiService {
   private apiKey: string;
-
   
   constructor() {
     config()
@@ -26,8 +25,6 @@ export class GeminiApiService {
       const model = genAI.getGenerativeModel({
         model: "gemini-1.5-pro", 
       });
-
-      const getResponse = await fileManager.getFile(uploadResponse.file.name);
 
       const result = await model.generateContent([
         {

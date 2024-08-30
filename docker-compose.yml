@@ -10,6 +10,8 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/shopper_api
     command: ["npm", "start"]
+    volumes:
+     - ./images:/app/dist/images
     depends_on:
       - db
 
