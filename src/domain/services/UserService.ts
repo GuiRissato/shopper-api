@@ -20,6 +20,7 @@ export class UserService {
 
   async findMeasureByMonth(customerCode: string, measureDatetime: number, measureType: 'WATER' | 'GAS'): Promise<any> {
     try {
+      console.log(customerCode, measureDatetime, measureType)
       const user = await this.userRepository.findByCustomerCode(customerCode);
       if (!user) {
         throw new Error('User not found');
@@ -27,14 +28,25 @@ export class UserService {
 
       const date = new Date(measureDatetime);
       const year = date.getFullYear();
-      const month = date.getMonth() + 1; // getMonth() retorna 0 para janeiro, precisamos adicionar 1
+      const month = date.getMonth() + 1; 
 
-      // Chamando o repositório para buscar a medida
-      const measure = await this.userRepository.findMeasureByMonth(user.id, year, month, measureType);
+      const measure = await this.userRepository.findMeasureByMonth(user.id, month, measureType);
+      console.log('measure',measure)
       return measure;
     } catch (error: any) {
       throw new Error(`Failed to find measure by month: ${error.message}`);
     }
   }
+
+async findUserByCustomerCode(customerCode: string): Promise<User | null> {
+  try {
+    const user = await this.userRepository.findByCustomerCode(customerCode);
+    return user;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar usuário por código de cliente: ${error.message}`);
+  }
+}
+
+
 
 }

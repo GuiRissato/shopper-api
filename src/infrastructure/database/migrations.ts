@@ -10,21 +10,13 @@ async function createTables() {
       updated_at TIMESTAMP DEFAULT NOW()
     );
 
-    CREATE TABLE IF NOT EXISTS water_consumption (
+    CREATE TABLE IF NOT EXISTS consumption (
       id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(id),
+      type VARCHAR(10) CHECK(type IN ('water', 'gas')),
       image_url VARCHAR(100),
       measure_value INTEGER NOT NULL,
-      has_confirmed BOOLEAN,
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
-    );
-
-    CREATE TABLE IF NOT EXISTS gas_consumption (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id),
-      image_url VARCHAR(100),
-      measure_value INTEGER NOT NULL,
+      uuid varchar(100) NOT NULL,
       has_confirmed BOOLEAN,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()

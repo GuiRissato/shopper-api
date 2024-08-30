@@ -11,15 +11,15 @@ export class UserRepository implements IUserRepository {
     this.db = db
   }
   
-  async findMeasureByMonth(userId: number, year: number, month: number, measureType: 'WATER' | 'GAS'): Promise<any> {
+  async findMeasureByMonth(userId: number, month: number, measureType: 'WATER' | 'GAS'): Promise<any> {
     try {
-      const tableName = measureType === 'WATER' ? 'water_consumption' : 'gas_consumption';
       const query = `
-        SELECT * FROM ${tableName}
-        WHERE user_id = $1 AND EXTRACT(YEAR FROM created_at) = $2 AND EXTRACT(MONTH FROM created_at) = $3
+        SELECT * FROM consumption
+        WHERE user_id = $1 AND EXTRACT(MONTH FROM created_at) = $2 and type = $3
         LIMIT 1
       `;
-      const result = await this.db.query(query, [userId, year, month]);
+      const result = await this.db.query(query, [userId, month, measureType.toLowerCase()]);
+      
       return result.rows[0] || null;
     } catch (error: any) {
       throw new Error(`Failed to find measure by month: ${error.message}`);
