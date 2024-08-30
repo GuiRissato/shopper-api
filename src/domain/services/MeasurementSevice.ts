@@ -1,16 +1,25 @@
-import { MeasureRepository } from '../repositories/Measurementrepository';
+import { MeasurementRepository } from '../repositories/Measurementrepository';
 
 export class MeasurementService {
-  constructor(private measureRepository: MeasureRepository) {}
+  private measurementRepository: MeasurementRepository;
 
-  async confirmMeasurement(id: number, confirmedValue: number): Promise<void> {
-    const measure = await this.measureRepository.findById(id);
+  constructor(measurementRepository: MeasurementRepository) {
+    this.measurementRepository = measurementRepository;
+  }
 
-    if (!measure) {
-      throw new Error("MEASURE_NOT_FOUND");
+  async confirmMeasurement(measure_uuid: string, confirmed_value: number): Promise<string> {
+    const existingMeasure = await this.measurementRepository.findMeasureByUuid(measure_uuid);
+
+
+    if (!existingMeasure) {
+      return 'NOT_FOUND';
     }
 
-    measure.confirmValue(confirmedValue);
-    await this.measureRepository.save(measure);
+    if (existingMeasure.has_confirmed) {
+      return 'ALREADY_CONFIRMED';
+    }
+
+    await this.measurementRepository.confirmMeasure(measure_uuid, confirmed_value);
+    return 'CONFIRMED';
   }
 }

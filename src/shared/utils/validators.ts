@@ -3,7 +3,7 @@ export function validateBase64(base64String: string): boolean {
     return base64Regex.test(base64String);
   }
 
-export function getCurrentMonth(dateString: string): number {
+export function getCurrentMonth(dateString: Date): number {
     const date = new Date(dateString);
     return date.getMonth() + 1;
   }

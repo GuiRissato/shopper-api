@@ -1,34 +1,50 @@
 // src/application/controllers/MeasurementController.ts
-
 import { Request, Response } from 'express';
 import { MeasurementService } from '../../domain/services/MeasurementSevice';
-import { MeasureRepository } from '../../domain/repositories/Measurementrepository';
-import { responseHandler } from '../../shared/utils/responseHandler';
 
-const measureRepository = new MeasureRepository();
-const measurementService = new MeasurementService(measureRepository);
+export class MeasurementController {
+  private measurementService: MeasurementService;
 
-export const confirmMeasurement = async (req: Request, res: Response) => {
-  try {
-    const { measure_id, confirmed_value } = req.body;
+  constructor(measurementService: MeasurementService) {
+    this.measurementService = measurementService;
+  }
 
-    if (typeof measure_id !== 'number' || typeof confirmed_value !== 'number') {
-      return responseHandler(res, 400, "INVALID_DATA", "measure_id deve ser um número e confirmed_value deve ser um número inteiro");
-    }
+  async confirmMeasurement(req: Request, res: Response): Promise<Response> {
+    try {
+      const { measure_uuid, confirmed_value } = req.body;
 
-    await measurementService.confirmMeasurement(measure_id, confirmed_value);
-    responseHandler(res, 200, null, null, { success: true });
+      // Validação dos dados de entrada
+      if ( typeof measure_uuid !== 'string' || typeof confirmed_value !== 'number') {
+        return res.status(400).json({
+          error_code: 'INVALID_DATA',
+          error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
+        });
+      }
 
-  } catch (error: any) {
-    switch (error.message) {
-      case "MEASURE_NOT_FOUND":
-        responseHandler(res, 404, "MEASURE_NOT_FOUND", "Leitura não encontrada");
-        break;
-      case "CONFIRMATION_DUPLICATE":
-        responseHandler(res, 409, "CONFIRMATION_DUPLICATE", "Leitura já confirmada");
-        break;
-      default:
-        responseHandler(res, 500, "INTERNAL_ERROR", error.message);
+      // Chamar o serviço para confirmar a leitura
+      const confirmationResult = await this.measurementService.confirmMeasurement(measure_uuid, confirmed_value);
+
+      if (confirmationResult === 'NOT_FOUND') {
+        return res.status(404).json({
+          error_code: 'MEASURE_NOT_FOUND',
+          error_description: 'Leitura não encontrada',
+        });
+      }
+
+      if (confirmationResult === 'ALREADY_CONFIRMED') {
+        return res.status(409).json({
+          error_code: 'CONFIRMATION_DUPLICATE',
+          error_description: 'Leitura do mês já realizada',
+        });
+      }
+
+      return res.status(200).json({ success: true });
+
+    } catch (error: any) {
+      return res.status(500).json({
+        error_code: 'INTERNAL_ERROR',
+        error_description: error.message,
+      });
     }
   }
-};
+}

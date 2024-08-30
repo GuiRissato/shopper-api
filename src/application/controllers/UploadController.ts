@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { GeminiApiService } from '../../domain/services/GeminiApiService';
 import { UserService } from '../../domain/services/UserService';
-import { ConsumptionRepository } from '../../domain/repositories/ConsumptionRepository'; // Adicione o repositório de consumo
+import { ConsumptionRepository } from '../../domain/repositories/ConsumptionRepository';
 import { validateBase64, getCurrentMonth } from '../../shared/utils/validators';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,12 +11,12 @@ import sharp from 'sharp';
 export class UploadController {
   private geminiApiService: GeminiApiService;
   private userService: UserService;
-  private consumptionRepository: ConsumptionRepository; // Adicione o repositório de consumo
+  private consumptionRepository: ConsumptionRepository;
 
   constructor(geminiApiService: GeminiApiService, userService: UserService, consumptionRepository: ConsumptionRepository) {
     this.geminiApiService = geminiApiService;
     this.userService = userService;
-    this.consumptionRepository = consumptionRepository; // Inicialize o repositório de consumo
+    this.consumptionRepository = consumptionRepository;
   }
 
   async uploadImage(req: Request, res: Response): Promise<Response> {
@@ -43,9 +43,8 @@ export class UploadController {
         });
       }
 
-      // Verifica se já existe uma leitura para o mês atual
       const currentMonth = getCurrentMonth(measure_datetime);
-      const existingMeasure = await this.userService.findMeasureByMonth(customer_code, currentMonth, measure_type);
+      const existingMeasure = await this.userService.findMeasureByMonth(customer_code, currentMonth, measure_type.toUpperCase());
 
       if (existingMeasure) {
         return res.status(409).json({
@@ -54,7 +53,6 @@ export class UploadController {
         });
       }
 
-      // Diretório de upload e conversão da imagem
       const uploadDir = path.join(__dirname, '..', 'uploads');
 
       if (!fs.existsSync(uploadDir)) {
@@ -72,12 +70,12 @@ export class UploadController {
 
       // Salvar os dados no banco de dados
       await this.consumptionRepository.saveConsumption({
-        userId: userId,
-        imageUrl: measurementDetails.image_url,
-        measureValue: measurementDetails.measure_value,
-        hasConfirmed: false,
-        measureType: measure_type.toLowerCase(), // WATER ou GAS
-        measureDatetime: measure_datetime
+        user_id: userId,
+        uuid: measurementDetails.guid,
+        image_url: measurementDetails.image_url,
+        measure_value: measurementDetails.measure_value,
+        has_confirmed: false,
+        type: measure_type.toLowerCase(),
       });
 
       // Resposta com os detalhes da imagem e medição

@@ -20,18 +20,13 @@ export class UserService {
 
   async findMeasureByMonth(customerCode: string, measureDatetime: number, measureType: 'WATER' | 'GAS'): Promise<any> {
     try {
-      console.log(customerCode, measureDatetime, measureType)
       const user = await this.userRepository.findByCustomerCode(customerCode);
       if (!user) {
         throw new Error('User not found');
       }
 
-      const date = new Date(measureDatetime);
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1; 
+      const measure = await this.userRepository.findMeasureByMonth(user.id, measureDatetime, measureType);
 
-      const measure = await this.userRepository.findMeasureByMonth(user.id, month, measureType);
-      console.log('measure',measure)
       return measure;
     } catch (error: any) {
       throw new Error(`Failed to find measure by month: ${error.message}`);

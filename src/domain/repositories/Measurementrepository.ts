@@ -1,27 +1,16 @@
-// src/infrastructure/repositories/MeasureRepository.ts
-
+// src/domain/repositories/MeasurementRepository.ts
 import pool from '../../infrastructure/database/connection';
-import { Measure } from '../../domain/entities/Measure';
+import { IMeasurementRepository } from './IMeasurementRepository';
 
-export class MeasureRepository {
-  async findById(id: number): Promise<Measure | null> {
-    const result = await pool.query('SELECT * FROM consumption WHERE id = $1', [id]);
-    if (result.rows.length === 0) return null;
-
-    const measureData = result.rows[0];
-    return new Measure(
-      measureData.id,
-      measureData.user_id,
-      measureData.image_url,
-      measureData.measure_value,
-      measureData.has_confirmed
-    );
+export class MeasurementRepository implements IMeasurementRepository {
+  async findMeasureByUuid(measure_uuid: string): Promise<any> {
+    const query = 'SELECT * FROM consumption WHERE uuid = $1';
+    const result = await pool.query(query, [measure_uuid]);
+    return result.rows[0];
   }
 
-  async save(measure: Measure): Promise<void> {
-    await pool.query(
-      'UPDATE consumption SET measure_value = $1, has_confirmed = $2, updated_at = NOW() WHERE id = $3',
-      [measure.value, measure.hasConfirmed, measure.id]
-    );
+  async confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<void> {
+    const query = 'UPDATE consumption SET measure_value = $1, has_confirmed = TRUE WHERE uuid = $2';
+    await pool.query(query, [confirmed_value, measure_uuid]);
   }
 }

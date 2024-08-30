@@ -13,12 +13,13 @@ export class UserRepository implements IUserRepository {
   
   async findMeasureByMonth(userId: number, month: number, measureType: 'WATER' | 'GAS'): Promise<any> {
     try {
+
       const query = `
         SELECT * FROM consumption
-        WHERE user_id = $1 AND EXTRACT(MONTH FROM created_at) = $2 and type = $3
+        WHERE user_id = $1 AND EXTRACT(MONTH FROM created_at) = $2 and type = '${measureType.toLocaleLowerCase()}'
         LIMIT 1
       `;
-      const result = await this.db.query(query, [userId, month, measureType.toLowerCase()]);
+      const result = await this.db.query(query, [userId, month]);
       
       return result.rows[0] || null;
     } catch (error: any) {
