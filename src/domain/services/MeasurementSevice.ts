@@ -7,7 +7,7 @@ export class MeasurementService {
     this.measurementRepository = measurementRepository;
   }
 
-  async confirmMeasurement(measure_uuid: string, confirmed_value: number): Promise<string> {
+  async confirmMeasurement(measure_uuid: string, confirmed_value: number): Promise<string|boolean> {
     const existingMeasure = await this.measurementRepository.findMeasureByUuid(measure_uuid);
 
 
@@ -19,8 +19,8 @@ export class MeasurementService {
       return 'ALREADY_CONFIRMED';
     }
 
-    await this.measurementRepository.confirmMeasure(measure_uuid, confirmed_value);
-    return 'CONFIRMED';
+    const result = await this.measurementRepository.confirmMeasure(measure_uuid, confirmed_value);
+    return result;
   }
 
   async getMeasuresByCustomerCode(customerCode: string, measureType?: string) {

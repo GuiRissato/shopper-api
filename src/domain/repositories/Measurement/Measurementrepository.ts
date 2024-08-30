@@ -37,8 +37,17 @@ export class MeasurementRepository implements IMeasurementRepository {
     return result.rows[0];
   }
 
-  async confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<void> {
-    const query = 'UPDATE consumption SET measure_value = $1, has_confirmed = TRUE WHERE uuid = $2';
-    await pool.query(query, [confirmed_value, measure_uuid]);
+  async confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<boolean> {
+    const query = 'SELECT measure_value FROM consumption WHERE uuid = $1';
+    const result = await pool.query(query, [measure_uuid]);
+    const registered_value = result.rows[0].measure_value;
+  
+    if (registered_value === confirmed_value) {
+      const updateQuery = 'UPDATE consumption SET has_confirmed = TRUE WHERE uuid = $1';
+      await pool.query(updateQuery, [measure_uuid]);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

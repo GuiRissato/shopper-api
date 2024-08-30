@@ -35,7 +35,7 @@ export class MeasurementController {
         });
       }
 
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: confirmationResult });
 
     } catch (error: any) {
       return res.status(500).json({

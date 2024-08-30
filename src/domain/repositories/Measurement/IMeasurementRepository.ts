@@ -1,6 +1,6 @@
 export interface IMeasurementRepository {
     findMeasureByUuid(measure_uuid: string): Promise<any>;
-    confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<void>;
+    confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<boolean>;
     findMeasuresByCustomerCode( customerCode: string, measureType?: 'WATER' | 'GAS' ): Promise<Array<{
       uuid: string;
       created_at: Date;
