@@ -1,4 +1,3 @@
-// src/application/controllers/MeasurementController.ts
 import { Request, Response } from 'express';
 import { MeasurementService } from '../../domain/services/MeasurementSevice';
 
@@ -13,7 +12,6 @@ export class MeasurementController {
     try {
       const { measure_uuid, confirmed_value } = req.body;
 
-      // Validação dos dados de entrada
       if ( typeof measure_uuid !== 'string' || typeof confirmed_value !== 'number') {
         return res.status(400).json({
           error_code: 'INVALID_DATA',
@@ -21,7 +19,6 @@ export class MeasurementController {
         });
       }
 
-      // Chamar o serviço para confirmar a leitura
       const confirmationResult = await this.measurementService.confirmMeasurement(measure_uuid, confirmed_value);
 
       if (confirmationResult === 'NOT_FOUND') {

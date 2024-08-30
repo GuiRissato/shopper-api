@@ -1,4 +1,3 @@
-// src/domain/repositories/MeasurementRepository.ts
 import pool from '../../../infrastructure/database/connection';
 import { IMeasurementRepository } from './IMeasurementRepository';
 

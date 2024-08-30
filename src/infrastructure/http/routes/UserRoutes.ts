@@ -1,4 +1,3 @@
-// src/infrastructure/http/routes/UserRoutes.ts
 import { Router } from 'express';
 import { UserService } from '../../../domain/services/UserService';
 import { UserController } from '../../../application/controllers/UserController';

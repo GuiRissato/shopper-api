@@ -1,4 +1,3 @@
-
 services:
   shopper-api:
     build: 

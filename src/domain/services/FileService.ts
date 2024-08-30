@@ -17,11 +17,9 @@ export class FileService {
       const base64Data = base64Image.split('data:image/jpeg;base64,')[1] || base64Image;
       const imageBuffer = Buffer.from(base64Data, 'base64');
       const imagePath = path.join(this.uploadDir, `${filename}.jpg`);
-      console.log(imagePath)
         
       const jpegBuffer = await sharp(imageBuffer).toFormat('jpeg').toBuffer();
-      const write = fs.writeFileSync(imagePath, jpegBuffer);
-      console.log(write)
+      fs.writeFileSync(imagePath, jpegBuffer);
 
       return imagePath;
     } catch (error: any) {

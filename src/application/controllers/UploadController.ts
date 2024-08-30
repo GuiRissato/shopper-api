@@ -1,4 +1,3 @@
-// src/application/controllers/UploadController.ts
 import { Request, Response } from 'express';
 import { GeminiApiService } from '../../domain/services/GeminiApiService';
 import { UserService } from '../../domain/services/UserService';
@@ -56,7 +55,6 @@ export class UploadController {
 
       const filename = `${customer_code}_${measure_datetime}`;
       await this.fileService.saveImage(image, filename);
-      console.log(this.fileService.getPublicUrl(filename))
 
       const uploadDir = path.join(__dirname, '..', 'uploads');
 
@@ -70,10 +68,8 @@ export class UploadController {
       const jpegBuffer = await sharp(imageBuffer).jpeg().toBuffer();
       fs.writeFileSync(imagePath, jpegBuffer);
 
-      // Extração dos detalhes da medição usando o Gemini API
       const measurementDetails = await this.geminiApiService.extractMeasurementDetails(imagePath);
 
-      // Salvar os dados no banco de dados
       await this.consumptionRepository.saveConsumption({
         user_id: userId,
         uuid: measurementDetails.guid,
@@ -83,7 +79,6 @@ export class UploadController {
         type: measure_type.toLowerCase(),
       });
 
-      // Resposta com os detalhes da imagem e medição
       return res.status(200).json({
         image_url: this.fileService.getPublicUrl(filename),
         measure_value: measurementDetails.measure_value,
